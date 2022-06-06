@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uqierp.dao.CustomerDao">
+  <resultMap id="BaseResultMap" type="com.uqierp.bean.Customer">
+    <id column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    customer_id, customer_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from customer
+    where customer_id = #{customerId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from customer
+    where customer_id = #{customerId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="customer_id" keyProperty="customerId" parameterType="com.uqierp.bean.Customer" useGeneratedKeys="true">
+    insert into customer (customer_name)
+    values (#{customerName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="customer_id" keyProperty="customerId" parameterType="com.uqierp.bean.Customer" useGeneratedKeys="true">
+    insert into customer
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="customerName != null">
+        customer_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="customerName != null">
+        #{customerName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.uqierp.bean.Customer">
+    update customer
+    <set>
+      <if test="customerName != null">
+        customer_name = #{customerName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where customer_id = #{customerId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.uqierp.bean.Customer">
+    update customer
+    set customer_name = #{customerName,jdbcType=VARCHAR}
+    where customer_id = #{customerId,jdbcType=BIGINT}
+  </update>
+</mapper>
