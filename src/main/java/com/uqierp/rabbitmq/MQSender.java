@@ -1,21 +1,29 @@
 package com.uqierp.rabbitmq;
 
-import org.springframework.amqp.core.AmqpTemplate;
+import com.alibaba.fastjson.JSON;
+import com.uqierp.bean.Mail;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//生产者
+import java.util.UUID;
+
+/**
+ * 生产者
+ */
 @Service
 public class MQSender {
-	
-	@Autowired
-	AmqpTemplate amqpTemplate;
 
-    //Direct模式
-	public void send(String msg) {
-		//第一个参数队列的名字，第二个参数发出的信息
-        System.out.println("开始发送消息："+msg);
-		amqpTemplate.convertAndSend(MQConfig.QUEUE, msg);
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
+	public void send(Mail mail) {
+		String msgId = UUID.randomUUID().toString();
+		mail.setMsgId(msgId);
+		// 发送消息
+		CorrelationData correlationData = new CorrelationData(msgId);
+		rabbitTemplate.convertAndSend(MQConfig.MAIL_EXCHANGE_NAME, MQConfig.MAIL_ROUTING_KEY_NAME, JSON.toJSONString(mail), correlationData);
 	}
 	
 }

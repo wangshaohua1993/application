@@ -1,6 +1,7 @@
 package com.uqierp.controller;
 
 import com.uqierp.bean.Customer;
+import com.uqierp.bean.Mail;
 import com.uqierp.rabbitmq.MQSender;
 import com.uqierp.result.Result;
 import com.uqierp.service.CustomerService;
@@ -29,6 +30,9 @@ public class CustomerController {
     @PostMapping(value="/addCustomer")
     public Result<Integer> addCustomer(Customer customer) {
         Integer result = customerService.addCustomer(customer);
+        // mq异步发送邮件
+        Mail mail = this.buildMail(customer);
+        sender.send(mail);
         return Result.success(result);
     }
 
@@ -51,5 +55,13 @@ public class CustomerController {
     public Result<Integer> deleteCustomerByIds(List<Long> customerIds) {
         Integer result = customerService.deleteCustomerByIds(customerIds);
         return Result.success(result);
+    }
+
+    private Mail buildMail(Customer customer){
+        Mail mail = new Mail();
+        mail.setTo("xxx@163.com");
+        mail.setTitle("测试邮件标题");
+        mail.setContent(customer.getCustomerName());
+        return mail;
     }
 }
